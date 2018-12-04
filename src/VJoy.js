@@ -17,7 +17,8 @@ class VJoy extends Phaser.Plugins.BasePlugin {
 
     this.settings = {
       singleDirection: true,
-      maxDistanceInPixels: 200
+      maxDistanceInPixels: 200,
+      device: 0
     };
 
     this.imageGroup = [];
@@ -27,6 +28,7 @@ class VJoy extends Phaser.Plugins.BasePlugin {
 
   /**
    * First function call
+   * @method init
    */
   init() {
     console.log('Plugin is alive');
@@ -34,6 +36,7 @@ class VJoy extends Phaser.Plugins.BasePlugin {
 
   /**
    * To get the cursors attribute
+   * @method getCursors
    * @return {Object}
    */
   getCursors() {
@@ -42,6 +45,7 @@ class VJoy extends Phaser.Plugins.BasePlugin {
 
   /**
    * For set sprite
+   * @method setSprite
    * @param {array} - Array of multiple sprite
    */
   setSprite(imageGroup) {
@@ -51,15 +55,18 @@ class VJoy extends Phaser.Plugins.BasePlugin {
 
   /**
    * To define cursors
-   * @param {Object} - Coordinates of pointer (A Pointer object encapsulates both mouse and touch input within Phaser.)
+   * @method setDirection
+   * @param {array} - Coordinates of pointer (A Pointer object encapsulates both mouse and touch input within Phaser.)
    */
-  setDirection(mouse) {
+  setDirection(pointers) {
     if (!this.active) {
       return;
     }
 
-    var deltaX = mouse.x - this.initialPoint.x;
-    var deltaY = mouse.y - this.initialPoint.y;
+    var pointer = pointers[this.settings.device].position;
+
+    var deltaX = pointer.x - this.initialPoint.x;
+    var deltaY = pointer.y - this.initialPoint.y;
 
     var dist = Math.hypot(deltaX, deltaY);
     var maxDistanceInPixels = this.settings.maxDistanceInPixels;
@@ -67,10 +74,10 @@ class VJoy extends Phaser.Plugins.BasePlugin {
     if (this.settings.singleDirection) {
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         deltaY = 0;
-        mouse.y = this.initialPoint.y;
+        pointer.y = this.initialPoint.y;
       } else {
         deltaX = 0;
-        mouse.x = this.initialPoint.x;
+        pointer.x = this.initialPoint.x;
       }
     }
 
@@ -96,28 +103,31 @@ class VJoy extends Phaser.Plugins.BasePlugin {
 
   /**
    * For create the Joystick
-   * @param {Object} - Coordinates of pointer.
+   * @method createJoystick
+   * @param {array} - Coordinates of pointer.
    */
-  createJoystick(mouse) {
+  createJoystick(pointers) {
+    var pointer = pointers[device].position;
     this.active = true;
 
     this.imageGroup.forEach((sprite) => {
       sprite.visible = true;
-      //sprite.bringToTop();
+      sprite.setScrollFactor(0);
 
-      sprite.x = mouse.x;
-      sprite.y = mouse.y;
+      sprite.x = pointer.x;
+      sprite.y = pointer.y;
 
     });
 
     this.initialPoint = {
-      x: mouse.x,
-      y: mouse.y
+      x: pointer.x,
+      y: pointer.y
     };
   }
 
   /**
    * For remove the Joystick
+   * @method removeJoystick
    */
   removeJoystick() {
     this.active = false;

@@ -15,8 +15,6 @@ var gamePlayState = new Phaser.Class({
   },
 
   create: function() {
-    console.log("GamePlay");
-
     sprite = this.add.sprite(300, 300, 'player');
     plugin = this.plugins.get('VJoy');
 
@@ -26,21 +24,26 @@ var gamePlayState = new Phaser.Class({
     imageGroup.push(this.add.sprite(0, 0, 'vjoy_body'));
     imageGroup.push(this.add.sprite(0, 0, 'vjoy_base'));
 
+    //To customize the plugin, we change the options
     plugin.settings.singleDirection = false;
+    plugin.settings.device = 1; //0 for mouse pointer (computer), 1 for touch pointer (mobile)
     plugin.setSprite(imageGroup);
 
+    this.input.on('pointerdown', function(pointer) {
+      if (!plugin.active) {
+        plugin.createJoystick(pointer.position);
+      }
+    }, this);
     this.input.on('pointerup', function(pointer) {
       if (plugin.active) {
         plugin.removeJoystick();
-      } else {
-        plugin.createJoystick(pointer.position);
       }
     }, this);
   },
 
   update: function() {
-    var souris = this.input.manager.pointers[0].position;
-    plugin.setDirection(souris);
+    var pointers = this.input.manager.pointers;
+    plugin.setDirection(pointers);
     var cursors = plugin.getCursors();
 
     if (cursors.left) {
