@@ -1,34 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head lang="en">
-    <meta charset="UTF-8">
-    <title>vjoy</title>
-    <link href="css/style.css" />
 
-    <script src="./js/phaser.min.js"></script> <!-- 3.15 -->
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>vjoy</title>
+  <link href="css/style.css" />
 
-    <script src="./js/GlobalVariables.js"></script>
-    <script src="../src/VJoy.js"></script>
-    <script src="./js/GamePlay.js"></script>
-  </head>
-  <body>
-    <script>
+  <script src="./js/phaser.min.js"></script> <!-- 3.15 -->
 
-      //On page load, create game config
-      var config = {
-        type: Phaser.AUTO,
-        width: 640,
-        height: 480,
-        plugins: {
-          global: [
-            { key: 'VJoy', plugin: VJoy, start: true }
-          ]
-        },
-        scene: myGame.scenes
-      };
+  <script src="./js/GlobalVariables.js"></script>
+  <script src="../src/VJoy.js"></script>
+  <script src="./js/GamePlay.js"></script>
+</head>
 
-      //Instantiate the game with the config
-      var game = new Phaser.Game(config);
-    </script>
-  </body>
-  </html>
+<body>
+  <script>
+    //On page load, create game config
+    var config = {
+      type: Phaser.AUTO,
+      width: 640,
+      height: 480,
+      plugins: {
+        global: [{
+          key: 'VJoy',
+          plugin: VJoy,
+          start: true
+        }]
+      },
+      scene: myGame.scenes
+    };
+
+    //Instantiate the game with the config
+    var game = new Phaser.Game(config);
+  </script>
+</body>
+
+</html>
