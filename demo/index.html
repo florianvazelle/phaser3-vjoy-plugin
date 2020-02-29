@@ -3,30 +3,24 @@
 
 <head lang="en">
   <meta charset="UTF-8">
-  <title>vjoy</title>
+  <title>VJoy</title>
   <link href="css/style.css" />
 
-  <script src="./js/phaser.min.js"></script> <!-- 3.15 -->
+  <script src="./js/phaser.min.js"></script> <!-- Phaser 3.22.0 "Kohaku" -->
 
   <script src="./js/GlobalVariables.js"></script>
-  <script src="../src/VJoy.js"></script>
   <script src="./js/GamePlay.js"></script>
 </head>
 
 <body>
   <script>
+    console.clear()
+
     //On page load, create game config
     var config = {
       type: Phaser.AUTO,
       width: 640,
       height: 480,
-      plugins: {
-        global: [{
-          key: 'VJoy',
-          plugin: VJoy,
-          start: true
-        }]
-      },
       scene: myGame.scenes
     };
 

@@ -9,42 +9,33 @@ var gamePlayState = new Phaser.Class({
 
     preload: function() {
         this.load.image('player', 'assets/player.png');
+
         this.load.image('vjoy_base', 'assets/base.png');
         this.load.image('vjoy_body', 'assets/body.png');
         this.load.image('vjoy_cap', 'assets/cap.png');
+
+        this.load.scenePlugin('VJoyPlugin', './VJoyPlugin.js', null, 'vjoy');
     },
 
     create: function() {
         sprite = this.add.sprite(300, 300, 'player');
-        plugin = this.plugins.get('VJoy');
+        this.joystick = this.add.joystick({
+            sprites: {
+                base: 'vjoy_base',
+                body: 'vjoy_body',
+                cap: 'vjoy_cap'
+            },
+            singleDirection: false,
+            maxDistanceInPixels: 200,
+            device: 0 // 0 for mouse pointer (computer), 1 for touch pointer (mobile)
+        });
 
-        var imageGroup = [];
-        imageGroup.push(this.add.sprite(0, 0, 'vjoy_cap'));
-        imageGroup.push(this.add.sprite(0, 0, 'vjoy_body'));
-        imageGroup.push(this.add.sprite(0, 0, 'vjoy_body'));
-        imageGroup.push(this.add.sprite(0, 0, 'vjoy_base'));
-
-        //To customize the plugin, we change the options
-        plugin.settings.singleDirection = false;
-        plugin.settings.device = 1; //0 for mouse pointer (computer), 1 for touch pointer (mobile)
-        plugin.setSprite(imageGroup);
-
-        this.input.on('pointerdown', function(pointer) {
-            if (!plugin.active) {
-                plugin.createJoystick(pointer.position);
-            }
-        }, this);
-        this.input.on('pointerup', function(pointer) {
-            if (plugin.active) {
-                plugin.removeJoystick();
-            }
-        }, this);
+        this.input.on('pointerdown', this.joystick.create, this.joystick);
+        this.input.on('pointerup', this.joystick.remove, this.joystick);
     },
 
     update: function() {
-        var pointers = this.input.manager.pointers;
-        plugin.setDirection(pointers);
-        var cursors = plugin.getCursors();
+        var cursors = this.joystick.getCursors();
 
         if (cursors.left) {
             sprite.x--;
