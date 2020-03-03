@@ -32,6 +32,11 @@ var gamePlayState = new Phaser.Class({
 
         this.input.on('pointerdown', this.joystick.create, this.joystick);
         this.input.on('pointerup', this.joystick.remove, this.joystick);
+
+        var gui = new dat.GUI();
+        gui.add(this.joystick.settings, 'singleDirection');
+        gui.add(this.joystick.settings, 'maxDistanceInPixels');
+        gui.add(this.joystick.settings, 'device', { Computer: 0, Mobile: 1 });
     },
 
     update: function() {
