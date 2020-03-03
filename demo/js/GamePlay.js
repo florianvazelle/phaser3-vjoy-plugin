@@ -18,7 +18,8 @@ var gamePlayState = new Phaser.Class({
     },
 
     create: function() {
-        sprite = this.add.sprite(300, 300, 'player');
+        sprite = this.physics.add.sprite(300, 300, 'player')
+            .setVelocity(0);
         this.joystick = this.add.joystick({
             sprites: {
                 base: 'vjoy_base',
@@ -42,16 +43,9 @@ var gamePlayState = new Phaser.Class({
     update: function() {
         var cursors = this.joystick.getCursors();
 
-        if (cursors.left) {
-            sprite.x--;
-        } else if (cursors.right) {
-            sprite.x++;
-        }
-        if (cursors.up) {
-            sprite.y--;
-        } else if (cursors.down) {
-            sprite.y++;
-        }
+        const speed = 0.2;
+
+        sprite.body.velocity.set(cursors.deltaX * speed, cursors.deltaY * speed);
     },
 });
 

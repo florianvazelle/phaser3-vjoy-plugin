@@ -218,10 +218,8 @@ var Joystick = /*#__PURE__*/function () {
 
     this.scene = scene;
     this.cursors = {
-      up: false,
-      down: false,
-      left: false,
-      right: false
+      deltaX: 0,
+      deltaY: 0
     };
     this.initialPoint = {
       x: 0,
@@ -232,7 +230,6 @@ var Joystick = /*#__PURE__*/function () {
       maxDistanceInPixels: settings.maxDistanceInPixels === undefined || settings.maxDistanceInPixels === null ? 200 : settings.maxDistanceInPixels,
       device: settings.device === undefined || settings.device === null ? 0 : settings.device
     };
-    console.log(settings, this.settings);
     this.imageGroup = [];
     this.imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
 
@@ -318,10 +315,8 @@ var Joystick = /*#__PURE__*/function () {
       }
 
       this.cursors = {
-        up: deltaY < 0,
-        down: deltaY > 0,
-        left: deltaX < 0,
-        right: deltaX > 0
+        deltaX: deltaX,
+        deltaY: deltaY
       };
       this.imageGroup.forEach(function (sprite, index) {
         sprite.x = this.initialPoint.x + deltaX * index / 3;
@@ -348,10 +343,8 @@ var Joystick = /*#__PURE__*/function () {
           sprite.visible = false;
         });
         this.cursors = {
-          up: false,
-          down: false,
-          left: false,
-          right: false
+          deltaX: 0,
+          deltaY: 0
         };
       }
     }

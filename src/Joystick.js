@@ -4,10 +4,8 @@ export default class Joystick {
         this.scene = scene;
 
         this.cursors = {
-            up: false,
-            down: false,
-            left: false,
-            right: false
+            deltaX: 0,
+            deltaY: 0
         };
 
         this.initialPoint = {
@@ -20,8 +18,6 @@ export default class Joystick {
             maxDistanceInPixels: (settings.maxDistanceInPixels === undefined || settings.maxDistanceInPixels === null) ? 200 : settings.maxDistanceInPixels,
             device: (settings.device === undefined || settings.device === null) ? 0 : settings.device
         };
-
-        console.log(settings, this.settings)
 
         this.imageGroup = [];
         this.imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
@@ -80,13 +76,13 @@ export default class Joystick {
             return;
         }
         
-        var pointer = pointers[this.settings.device].position;
+        const pointer = pointers[this.settings.device].position;
         
         var deltaX = pointer.x - this.initialPoint.x;
         var deltaY = pointer.y - this.initialPoint.y;
         
-        var dist = Math.hypot(deltaX, deltaY);
-        var maxDistanceInPixels = this.settings.maxDistanceInPixels;
+        const dist = Math.hypot(deltaX, deltaY);
+        const maxDistanceInPixels = this.settings.maxDistanceInPixels;
         
         if (this.settings.singleDirection) {
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
@@ -98,19 +94,14 @@ export default class Joystick {
             }
         }
         
-        var angle = Math.atan2(deltaY, deltaX);
+        const angle = Math.atan2(deltaY, deltaX);
         
         if (dist > maxDistanceInPixels) {
             deltaX = Math.cos(angle) * maxDistanceInPixels;
             deltaY = Math.sin(angle) * maxDistanceInPixels;
         }
         
-        this.cursors = {
-            up: (deltaY < 0),
-            down: (deltaY > 0),
-            left: (deltaX < 0),
-            right: (deltaX > 0)
-        }
+        this.cursors = { deltaX, deltaY };
         
         this.imageGroup.forEach(function (sprite, index) {
             sprite.x = this.initialPoint.x + (deltaX) * index / 3;
@@ -136,10 +127,8 @@ export default class Joystick {
             });
 
             this.cursors = {
-                up: false,
-                down: false,
-                left: false,
-                right: false
+                deltaX: 0,
+                deltaY: 0
             };
         }
     }
