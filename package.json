@@ -11,6 +11,14 @@
     "type": "git",
     "url": "git+https://github.com/florianvazelle/phaser3-vjoy-plugin.git"
   },
+  "keywords": [
+    "phaser",
+    "phaser3",
+    "phaser-plugin",
+    "phaser3-plugin",
+    "vjoy",
+    "virtual-joystick"
+  ],
   "author": "Florian Vazelle",
   "license": "MIT",
   "bugs": {
