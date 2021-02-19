@@ -1,8 +1,8 @@
 {
   "name": "phaser3-vjoy-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Virtual Joystick Plugin for Phaser 3",
-  "main": "src/main.js",
+  "main": "dist/VJoyPlugin.js",
   "scripts": {
     "build": "webpack",
     "demo": "http-server demo -p 2234"
@@ -25,6 +25,9 @@
     "url": "https://github.com/florianvazelle/phaser3-vjoy-plugin/issues"
   },
   "homepage": "https://github.com/florianvazelle/phaser3-vjoy-plugin#readme",
+  "peerDependencies": {
+    "phaser": "3.x"
+  },
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
