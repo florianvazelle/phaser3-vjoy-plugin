@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 16
       - run: npm install
       - run: npm run lint
   test:
@@ -21,7 +21,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
-        node-version: 10
+        node-version: 16
     - run: npm install
     - run: npm test
   diff:
@@ -30,8 +30,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 16
       - run: npm install
-      - run: mv -r dist old-dist
+      - run: mv dist old-dist
       - run: npm run build
       - run: diff dist old-dist
