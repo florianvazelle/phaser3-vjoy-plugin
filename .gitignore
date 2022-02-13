@@ -2,6 +2,7 @@
 Thumbs.db
 .DS_Store
 .idea
+.vscode
 *.suo
 *.sublime-project
 *.sublime-workspace
@@ -12,3 +13,4 @@ node_modules/
 # Build
 build/
 /npm-debug.log
+.parcel-cache

@@ -1,135 +1,239 @@
-export default class Joystick {
+/**
+ * @author       Florian Vazelle <ponythugflorian@gmail.com>
+ * @license      {@link https://opensource.org/licenses/MIT|MIT License}
+ */
 
-    constructor(scene, settings) {
-        this.scene = scene;
+var Phaser = require('phaser');
 
-        this.cursors = {
-            deltaX: 0,
-            deltaY: 0
-        };
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Joystick
+ * @memberOf Phaser.GameObjects
+ * @constructor
+ *
+ * @param {Phaser.Scene} scene - [description]
+ * @param {object} [settings] - [description]
+ */
+var Joystick = new Phaser.Class({
+    
+    Extends: Phaser.GameObjects.GameObject,
 
-        this.initialPoint = {
-            x: 0,
-            y: 0
-        };
+    Mixins: [
+        Phaser.GameObjects.Components.Transform
+    ],
 
-        this.settings = {
-            singleDirection: (settings.singleDirection === undefined || settings.singleDirection === null) ? true : settings.singleDirection,
-            maxDistanceInPixels: (settings.maxDistanceInPixels === undefined || settings.maxDistanceInPixels === null) ? 200 : settings.maxDistanceInPixels,
-            device: (settings.device === undefined || settings.device === null) ? 0 : settings.device
-        };
+    initialize:
 
-        this.imageGroup = [];
-        this.imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
+    function Joystick (scene, settings)
+    {
+        console.log('  [Joystick] constructor');
 
-        for (var i = 0; i < this.settings.maxDistanceInPixels; i += 100) {
-            this.imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.body));
+        Phaser.GameObjects.GameObject.call(this, scene, 'Joystick');
+
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.Joystick#cursors
+         * @type {Phaser.Math.Vector2}
+         */
+        this.cursors = new Phaser.Math.Vector2(0, 0);
+
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.Joystick#singleDirection
+         * @type {boolean}
+         * @default true
+         */
+        this.singleDirection = (settings.singleDirection === undefined) ? true : settings.singleDirection;
+
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.Joystick#maxDistanceInPixels
+         * @type {number}
+         * @default 200
+         */
+        this.maxDistanceInPixels = (settings.maxDistanceInPixels === undefined) ? 200 : settings.maxDistanceInPixels;
+
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.Joystick#device
+         * @type {number}
+         * @default 0
+         */
+        this.device = (settings.device === undefined) ? 0 : settings.device;
+
+        // Instanciate the Joystick sprites.
+        var imageGroup = [];
+        imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.cap));
+        for (var i = 0; i < this.maxDistanceInPixels; i += 100)
+        {
+            imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.body));
         }
-        this.imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.base));
-        
-        this.active = true;
-        
-        this.remove();
-    }
-    
-    /**
-     * For create the Joystick
-     * @method create
-     * @param {Array} - Coordinates of pointer.
-     */
-    create({ position }) {
-        if (!this.active) {
-            this.active = true;
+        imageGroup.push(this.scene.add.sprite(0, 0, settings.sprites.base));
 
-            this.imageGroup.forEach(sprite => {
-                sprite.visible = true;
-                sprite.setScrollFactor(0);
-    
-                sprite.x = position.x;
-                sprite.y = position.y;
-                
-            });
-    
-            this.initialPoint = {
-                x: position.x,
-                y: position.y
-            };
-        }
-    }
+        // Manage the Joystick sprites with a Layer.
+        this.layer = this.scene.add.layer(imageGroup);
+        this.layer.setVisible(false);
+
+        // Set Joystick position to (0, 0).
+        this.setPosition(0, 0);
+        
+        // Disable update logic of this Joystick.
+        this.setActive(false);
+
+        // Add input callback on the current scene.
+        this.scene.input.on(Phaser.Input.Events.POINTER_DOWN, this.onKeyDown, this);
+        this.scene.input.on(Phaser.Input.Events.POINTER_UP, this.onKeyUp, this);
+
+        // Add current Joystick to the scene, it will be added to the Update List.
+        this.scene.add.existing(this);
+    },
 
     /**
-     * To get the cursors attribute
-     * @method getCursors
-     * @return {Object}
+     * The read-only deltaX of this Joystick.
+     *
+     * @name Phaser.GameObjects.Joystick#deltaX
+     * @type {number}
      */
-    getCursors() {
-        return this.cursors;
-    }
-    
-    /**
-     * To define cursors
-     * @method setDirection
-     * @param {Array} - Coordinates of pointer (A Pointer object encapsulates both mouse and touch input within Phaser.)
-     */
-    setDirection(pointers) {
-        if (!this.active) {
-            return;
+    deltaX: {
+
+        get: function ()
+        {
+            return this.cursors.x;
         }
+
+    },
+
+    /**
+     * The read-only deltaY of this Joystick.
+     *
+     * @name Phaser.GameObjects.Joystick#deltaY
+     * @type {number}
+     */
+    deltaY: {
+
+        get: function ()
+        {
+            return this.cursors.y;
+        }
+
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.GameObjects.Joystick#onKeyDown
+     * 
+     * @param {Phaser.Input.Pointer} pointer - 
+     */
+    onKeyDown: function (pointer)
+    {
+        console.log('  [Joystick] onKeyDown', pointer);
+
+        // Enable update logic of this Joystick.
+        this.setActive(true);
+
+        // Show sprites.
+        this.layer.setVisible(true);
+        this.layer.each(function (gameObject)
+        {
+            gameObject.setScrollFactor(0);
+
+            gameObject.x = pointer.x;
+            gameObject.y = pointer.y;
+        }, this);
+
+        // Set position of this Joystick to the pointer position.
+        this.setPosition(pointer.x, pointer.y);
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.GameObjects.Joystick#onKeyUp
+     * 
+     * @param {Phaser.Input.Pointer} pointer - 
+     */
+    onKeyUp: function (pointer)
+    {
+        console.log('  [Joystick] onKeyUp', pointer);
         
-        const pointer = pointers[this.settings.device].position;
+        // Disable update logic of this Joystick.
+        this.setActive(false);
+
+        // Hide sprites.
+        this.layer.setVisible(false);
+
+        // Reset cursors position.
+        this.cursors = new Phaser.Math.Vector2(0, 0);
+    },
+
+    /**
+     * Updates this Joystick.
+     * 
+     * Update cursors to compute new delta vector and update position of the sprites.
+     *
+     * @method Phaser.GameObjects.Joystick#preUpdate
+     *
+     * @param {number} time - The current timestamp as generated by the Request Animation Frame or SetTimeout.
+     * @param {number} delta - The delta time, in ms, elapsed since the last frame.
+     */
+    preUpdate: function (time, delta)
+    {
+        console.log('  [Joystick] preUpdate', time, delta);
+
+        // Retrieve player input pointers.
+        var pointers = this.scene.sys.input.manager.pointers;
         
-        var deltaX = pointer.x - this.initialPoint.x;
-        var deltaY = pointer.y - this.initialPoint.y;
+        // Get pointer corresponding to used device.
+        var pointer = pointers[this.device].position;
         
-        const dist = Math.hypot(deltaX, deltaY);
-        const maxDistanceInPixels = this.settings.maxDistanceInPixels;
+        // Compute delta pointer position.
+        var deltaX = pointer.x - this.x;
+        var deltaY = pointer.y - this.y;
         
-        if (this.settings.singleDirection) {
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        //
+        var dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // 
+        if (this.singleDirection)
+        {
+            if (Math.abs(deltaX) > Math.abs(deltaY))
+            {
                 deltaY = 0;
-                pointer.y = this.initialPoint.y;
-            } else {
+            }
+            else
+            {
                 deltaX = 0;
-                pointer.x = this.initialPoint.x;
             }
         }
         
-        const angle = Math.atan2(deltaY, deltaX);
+        //
+        var angle = Math.atan2(deltaY, deltaX);
         
-        if (dist > maxDistanceInPixels) {
-            deltaX = Math.cos(angle) * maxDistanceInPixels;
-            deltaY = Math.sin(angle) * maxDistanceInPixels;
+        // 
+        if (dist > this.maxDistanceInPixels)
+        {
+            deltaX = Math.cos(angle) * this.maxDistanceInPixels;
+            deltaY = Math.sin(angle) * this.maxDistanceInPixels;
         }
+
+        // Update cursors.
+        this.cursors = new Phaser.Math.Vector2(deltaX, deltaY);
         
-        this.cursors = { deltaX, deltaY };
-        
-        this.imageGroup.forEach(function (sprite, index) {
-            sprite.x = this.initialPoint.x + (deltaX) * index / 3;
-            sprite.y = this.initialPoint.y + (deltaY) * index / 3;
+        var index = 0;
+        this.layer.each(function (gameObject)
+        {
+            gameObject.x = this.x + (deltaX) * index / 3;
+            gameObject.y = this.y + (deltaY) * index / 3;
+            index++;
         }, this);
     }
-    
-    update () {
-        var pointers = this.scene.input.manager.pointers;
-        this.setDirection(pointers);
-    }
+});
 
-    /**
-     * For remove the Joystick
-     * @method remove
-     */
-    remove() {
-        if (this.active) {
-            this.active = false;
-
-            this.imageGroup.forEach(sprite => {
-                sprite.visible = false;
-            });
-
-            this.cursors = {
-                deltaX: 0,
-                deltaY: 0
-            };
-        }
-    }
-}
+module.exports = Joystick;
